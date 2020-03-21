@@ -216,8 +216,8 @@ def analyze_data():
     #     category = categories_data[function_index - 1]
     #     group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
     #
-    #     print(len(group_1_data_indices))
-    #     print(len(group_2_data_indices))
+    #     print(len(group_1_data_indices)
+    #     print(len(group_2_data_indices)
 
     data_retrieve_index = 111
 
