@@ -1,5 +1,4 @@
-# This can be used to correlate two variables
-# This can also be used to make comparison between Groups
+# This can be used to correlate two variables setting different conditions
 
 import os
 import matplotlib.pyplot as plt
