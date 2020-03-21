@@ -191,16 +191,17 @@ def education_level_categorization(education_data):
             print("Do something")
 
 
-def age_education_categorize(age_indices, education_data):
+# The following method will be used to find out education level of a specific number of people
+# e.g. You may use this method to find out the people whose age is 18 to 30 years (have to pass indices
+# through "indices" argument) and education level is at least SSC.
+def compound_education_categorize(indices, education_data):
     # Index should start from 1 as first value (Index 0) is data name (e.g. Personality), string
-
-    # Age Indices mean the indices of the samples data for which we need to check education level
-    # That means all of them can be young or others
+    # Indices mean the indices of the samples data for which we need to check education level
 
     group_1_indices = []
     group_2_indices = []
 
-    for index in age_indices:
+    for index in indices:
         education = int(education_data[index])
         if education == 10:
             group_1_indices.append(index)
@@ -212,3 +213,22 @@ def age_education_categorize(age_indices, education_data):
             group_2_indices.append(index)
 
     return "Education >= SSC", "Education < SSC", group_1_indices, group_2_indices
+
+
+# This method will be used to find
+def compound_family_categorization(indices, family_data):
+    # Index should start from 1 as first value (Index 0) is data name (e.g. Personality), string
+    # Indices mean the indices of the samples data for which we need to check whether a person
+    # stays at family or not
+
+    group_1_indices = []
+    group_2_indices = []
+
+    for index in indices:
+        stays_with_f = family_data[index].upper()
+        if stays_with_f == "Y":
+            group_1_indices.append(index)
+        elif stays_with_f == "N":
+            group_2_indices.append(index)
+
+    return "Stays With Family", "Does Not Stay With Family", group_1_indices, group_2_indices

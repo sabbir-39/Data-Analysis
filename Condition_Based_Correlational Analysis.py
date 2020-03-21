@@ -73,7 +73,8 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result_young_below_SSC.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results"
+                            "\\cc_result_young_below_SSC_lives_w_family_TESTing.txt", "a")
 
     variable_1_name = variable_1_data[len(variable_1_data)-1]
     print("Name", variable_1_name)
@@ -216,16 +217,34 @@ def analyze_data():
     #     category = categories_data[function_index - 1]
     #     group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
     #
-    #     print(len(group_1_data_indices)
-    #     print(len(group_2_data_indices)
+    #     print(len(group_1_data_indices))
+    #     print(len(group_2_data_indices))
 
-    data_retrieve_index = 111
+    data_retrieve_index = 1119
 
-    if data_retrieve_index == 111:
+    # Finding who is young and have education level at least SSC
+    if data_retrieve_index == 111:  # 1 means age, 11 means education
         category_temp = categories_data[1]
-        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = g_methods.age_categories(category_temp[1:])
+        # Finding who is young
+        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = \
+            g_methods.age_categories(category_temp[1:])
         working_category = categories_data[11]
-        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = g_methods.age_education_categorize(group_1_data_indices_temp, working_category)
+        # Finding who has at least SSC
+        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
+            g_methods.compound_education_categorize(group_1_data_indices_temp, working_category)
+
+    # Finding who is young and have education level at least SSC and lives with family
+    if data_retrieve_index == 1119:  # 1 means age, 11 means education, 9 means family
+        category_temp = categories_data[1]
+        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
+            g_methods.age_categories(category_temp[1:])
+        temp_category = categories_data[11]
+        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
+            g_methods.compound_education_categorize(group_1_data_indices_temp, temp_category)
+
+        working_category = categories_data[9]
+        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
+            g_methods.compound_family_categorization(group_1_data_indices_temp, working_category)
 
     group_1_data_indices.append(0)
     group_2_data_indices.append(0)
