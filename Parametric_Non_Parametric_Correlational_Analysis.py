@@ -1,22 +1,18 @@
-# This can be used to correlate two variables setting different conditions
-
+# This will be used to find correlation between two variables
+# Data should be interval or ratio scale
 
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import Group_Indices as g_methods
 
 root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Data_Total.csv'
-root_path_categories = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Coded_Demographic_For_Aanlysis.csv'
-
 DEGREE = 1  # Fit a polynomial
 
 x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
 data_set = []
 already_calculated = []
-
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
 # The reason is, after data analysis, I have found IQR works better than Z score
@@ -73,12 +69,11 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results"
-                            "\\cc_result_young_below_SSC_lives_w_family_TESTing.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result.txt", "a")
 
-    variable_1_name = variable_1_data[len(variable_1_data)-1]
-    print("Name", variable_1_name)
-    variable_1_data = variable_1_data[:len(variable_1_data)-1]
+    variable_1_name = variable_1_data[0]
+    variable_1_data = variable_1_data[1:]
+
     variable_1_data = np.array(variable_1_data, dtype=np.float32)
     variable_1_data_not_sorted = variable_1_data
 
@@ -86,8 +81,8 @@ def find_the_correlation(variable_1_data):
 
         variable_1_data = variable_1_data_not_sorted
 
-        variable_2_name = variable_2_data[len(variable_2_data)-1]
-        variable_2_data = variable_2_data[:len(variable_2_data)-1]
+        variable_2_name = variable_2_data[0]
+        variable_2_data = variable_2_data[1:]
         variable_2_data = np.array(variable_2_data, dtype=np.float32)
 
         if not_calculated_correlation(variable_1_name, variable_2_name):
@@ -178,94 +173,22 @@ def find_the_correlation(variable_1_data):
                     # plt.show()
 
 
-def get_categories_data():
-
-    categories_data = []
-
-    with open(root_path_categories, encoding="utf8") as opened_file:
-        print(os.path.basename(root_path_categories))
-        data = opened_file.readlines()
-
-        # Reading the data(line by line)
-        # Each row contains data of one categories. e.g. All participants age data
-        for line in data:
-            line = line.split(',')
-            categories_data.append(line)
-        return categories_data
-
-
 # To analyze the data
 # We have to send the data path where the files will contain data
 def analyze_data():
-
-    categories_data = get_categories_data()
-
-    options = {2: g_methods.age_categories}
-    # 3: g_methods.vehicle_categorization,
-    # 4: g_methods.experience_categorization
-    # 5: g_methods.driving_hour_categorization,
-    # 6: g_methods.rest_interval_categorization,
-    # 7: g_methods.duty_hours_categorization,
-    # 8: g_methods.rest_hours_categorization,
-    # 9: g_methods.marital_status_categorization,
-    # 10: g_methods.lives_with_family_categorization,
-    # 11: g_methods.no_of_housemates_categorization,
-    # 12: g_methods.education_level_categorization}
-
-    # for function_index in range(2, 3):
-    #     grouping_methods = options.get(function_index)
-    #     category = categories_data[function_index - 1]
-    #     group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
-    #
-    #     print(len(group_1_data_indices))
-    #     print(len(group_2_data_indices))
-
-    data_retrieve_index = 1119
-
-    # Finding who is young and have education level at least SSC
-    if data_retrieve_index == 111:  # 1 means age, 11 means education
-        category_temp = categories_data[1]
-        # Finding who is young
-        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = \
-            g_methods.age_categories(category_temp[1:])
-        working_category = categories_data[11]
-        # Finding who has at least SSC
-        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
-            g_methods.compound_education_categorize(group_1_data_indices_temp, working_category)
-
-    # Finding who is young and have education level at least SSC and lives with family
-    if data_retrieve_index == 1119:  # 1 means age, 11 means education, 9 means family
-        category_temp = categories_data[1]
-        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
-            g_methods.age_categories(category_temp[1:])
-        temp_category = categories_data[11]
-        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
-            g_methods.compound_education_categorize(group_1_data_indices_temp, temp_category)
-
-        working_category = categories_data[9]
-        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
-            g_methods.compound_family_categorization(group_1_data_indices_temp, working_category)
-
-    group_1_data_indices.append(0)
-    group_2_data_indices.append(0)
-    print(group_2_data_indices)
-    print(len(group_2_data_indices))
 
     with open(root_data_path, encoding="utf8") as opened_file:
         print(os.path.basename(root_data_path))
         data = opened_file.readlines()
 
         # Reading the data(line by line)
-        # Each row contains data of one type. e.g. All participants data of personality
+        # Each row should contain data of one type. e.g. All participants data of personality
         for line in data:
             line = line.split(',')
-            line = np.array(line)
-            print(line[group_2_data_indices])
-            data_set.append(line[group_2_data_indices])
+            data_set.append(line)
 
         # Find the correlation one by one
         for per_data_in_dataset in data_set:
-            print("Length_Per_Data ", len(per_data_in_dataset))
             find_the_correlation(per_data_in_dataset)
 
 

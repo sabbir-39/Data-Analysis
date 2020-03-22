@@ -1,5 +1,6 @@
 # This can be used to correlate two variables
-# This can also be used to make comparison between Groups
+# Data should be ordinal type
+# As our data is likert scale (ordinal), we are using non-parametric test; Spearman Rank Correlation
 
 import os
 import matplotlib.pyplot as plt
@@ -112,65 +113,46 @@ def find_the_correlation(variable_1_data):
                     # del variable_2_data[index]
                     n_outlier += 1
 
-                if len(variable_1_data) >= 8 and len(variable_2_data) >= 8:
+                # Spearman Correlation Coefficient and P value
+                print(stats.spearmanr(variable_1_data, variable_2_data))
+                pcc, pcc_p_value = stats.spearmanr(variable_1_data, variable_2_data)
+                print("Spearman")
+                r_text = "rs = "
 
-                    # Doing Normality Test
-                    normality_stats_var1, p_value_norm_var1 = stats.normaltest(variable_1_data)
-                    normality_stats_var2, p_value_norm_var2 = stats.normaltest(variable_2_data)
+                # Data visualization
+                plt.xlabel(x_axis_label, fontweight='bold')
+                plt.ylabel(y_axis_label, fontweight='bold')
+                plt.title(title)
 
-                    # Printing the findings of normality test
-                    print(normality_stats_var1, p_value_norm_var1)
-                    print(normality_stats_var2, p_value_norm_var2)
+                # Drawing the trending line
+                z = np.polyfit(variable_1_data, variable_2_data, DEGREE)
+                p = np.poly1d(z)
+                plt.plot(variable_1_data, variable_2_data, linestyle='-.', marker='o', color='b')
+                # plt.plot(duration_list, p(duration_list), "k", label='Trending line')
+                plt.plot(variable_1_data, p(variable_1_data), "k")
+                # plt.legend(loc='best')
 
-                    if p_value_norm_var1 > 0.05 and p_value_norm_var2 > 0.05 and n_outlier == 0:
+                # Printing the findings
+                n_student_PCC = "N=" + str(len(variable_2_data))
+                str_PCC = r_text + get_2_decimal(pcc) + ", p=" + get_2_decimal(pcc_p_value)
 
-                        # Pearson Correlation coefficient(PCC) and P Value
-                        # We are calculating PCC as data is normally distributed and outlier free
-                        print(stats.pearsonr(variable_1_data, variable_2_data))
-                        pcc, pcc_p_value = stats.pearsonr(variable_1_data, variable_2_data)
-                        print("Pearson")
-                        r_text = "r = "
-                    else:
-                        # Spearman Correlation Coefficient and P value
-                        print(stats.spearmanr(variable_1_data, variable_2_data))
-                        pcc, pcc_p_value = stats.spearmanr(variable_1_data, variable_2_data)
-                        print("Spearman")
-                        r_text = "rs = "
+                if pcc_p_value > 0.0001:
+                    cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
+                              + get_2_decimal(pcc) + " , " + get_2_decimal(pcc_p_value) + "\n"
+                else:
+                    cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
+                              + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
 
-                    # Data visualization
-                    plt.xlabel(x_axis_label, fontweight='bold')
-                    plt.ylabel(y_axis_label, fontweight='bold')
-                    plt.title(title)
+                corr_coef_writer.write(cc_data)
 
-                    # Drawing the trending line
-                    z = np.polyfit(variable_1_data, variable_2_data, DEGREE)
-                    p = np.poly1d(z)
-                    plt.plot(variable_1_data, variable_2_data, linestyle='-.', marker='o', color='b')
-                    # plt.plot(duration_list, p(duration_list), "k", label='Trending line')
-                    plt.plot(variable_1_data, p(variable_1_data), "k")
-                    # plt.legend(loc='best')
+                print(title)
+                print(variable_1_data)
+                print(variable_2_data)
+                print(n_student_PCC)
+                print(str_PCC)
+                print("\n\n")
 
-                    # Printing the findings
-                    n_student_PCC = "N=" + str(len(variable_2_data))
-                    str_PCC = r_text + get_2_decimal(pcc) + ", p=" + get_2_decimal(pcc_p_value)
-
-                    if pcc_p_value > 0.0001:
-                        cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
-                                  + get_2_decimal(pcc) + " , " + get_2_decimal(pcc_p_value) + "\n"
-                    else:
-                        cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
-                                  + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
-
-                    corr_coef_writer.write(cc_data)
-
-                    print(title)
-                    print(variable_1_data)
-                    print(variable_2_data)
-                    print(n_student_PCC)
-                    print(str_PCC)
-                    print("\n\n")
-
-                    # plt.show()
+                # plt.show()
 
 
 # To analyze the data
