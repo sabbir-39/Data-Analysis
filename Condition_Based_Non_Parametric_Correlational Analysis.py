@@ -56,11 +56,7 @@ def detect_outlier_iqr(sorted_data):
 
 
 def get_2_decimal(value):
-    return str(float("{0:.3f}".format(value)))
-
-
-def get_2_decimal_to_float(value):
-    return float("{0:.2f}".format(value))
+    return str(float("{0:.4f}".format(value)))
 
 
 def not_calculated_correlation(var1_name, var2_name):
@@ -74,7 +70,7 @@ def not_calculated_correlation(var1_name, var2_name):
 
 def find_the_correlation(variable_1_data):
     corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results"
-                            "\\cc_result_young_below_SSC_lives_w_family_TESTing.txt", "a")
+                            "\\cc_do_not_live_with_family.txt", "a")
 
     variable_1_name = variable_1_data[len(variable_1_data)-1]
     print("Name", variable_1_name)
@@ -117,67 +113,49 @@ def find_the_correlation(variable_1_data):
                     # del variable_2_data[index]
                     n_outlier += 1
 
-                if len(variable_1_data) >= 8 and len(variable_2_data) >= 8:
+                # Spearman Correlation Coefficient and P value
+                print(stats.spearmanr(variable_1_data, variable_2_data))
+                pcc, pcc_p_value = stats.spearmanr(variable_1_data, variable_2_data)
+                print("Spearman")
+                r_text = "rs = "
 
-                    # Doing Normality Test
-                    normality_stats_var1, p_value_norm_var1 = stats.normaltest(variable_1_data)
-                    normality_stats_var2, p_value_norm_var2 = stats.normaltest(variable_2_data)
+                # Data visualization
+                plt.xlabel(x_axis_label, fontweight='bold')
+                plt.ylabel(y_axis_label, fontweight='bold')
+                plt.title(title)
 
-                    # Printing the findings of normality test
-                    print(normality_stats_var1, p_value_norm_var1)
-                    print(normality_stats_var2, p_value_norm_var2)
+                # Drawing the trending line
+                z = np.polyfit(variable_1_data, variable_2_data, DEGREE)
+                p = np.poly1d(z)
+                plt.plot(variable_1_data, variable_2_data, linestyle='-.', marker='o', color='b')
+                # plt.plot(duration_list, p(duration_list), "k", label='Trending line')
+                plt.plot(variable_1_data, p(variable_1_data), "k")
+                # plt.legend(loc='best')
 
-                    if p_value_norm_var1 > 0.05 and p_value_norm_var2 > 0.05 and n_outlier == 0:
+                # Printing the findings
+                n_student_PCC = "N=" + str(len(variable_2_data))
+                str_PCC = r_text + get_2_decimal(pcc) + ", p=" + get_2_decimal(pcc_p_value)
 
-                        # Pearson Correlation coefficient(PCC) and P Value
-                        # We are calculating PCC as data is normally distributed and outlier free
-                        print(stats.pearsonr(variable_1_data, variable_2_data))
-                        pcc, pcc_p_value = stats.pearsonr(variable_1_data, variable_2_data)
-                        print("Pearson")
-                        r_text = "r = "
-                    else:
-                        # Spearman Correlation Coefficient and P value
-                        print(stats.spearmanr(variable_1_data, variable_2_data))
-                        pcc, pcc_p_value = stats.spearmanr(variable_1_data, variable_2_data)
-                        print("Spearman")
-                        r_text = "rs = "
+                if pcc_p_value > 0.0001:
+                    cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
+                              + get_2_decimal(pcc) + " , " + get_2_decimal(pcc_p_value) + "\n"
+                else:
+                    cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
+                              + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
 
-                    # Data visualization
-                    plt.xlabel(x_axis_label, fontweight='bold')
-                    plt.ylabel(y_axis_label, fontweight='bold')
-                    plt.title(title)
+                corr_coef_writer.write(cc_data)
 
-                    # Drawing the trending line
-                    z = np.polyfit(variable_1_data, variable_2_data, DEGREE)
-                    p = np.poly1d(z)
-                    plt.plot(variable_1_data, variable_2_data, linestyle='-.', marker='o', color='b')
-                    # plt.plot(duration_list, p(duration_list), "k", label='Trending line')
-                    plt.plot(variable_1_data, p(variable_1_data), "k")
-                    # plt.legend(loc='best')
+                print(title)
+                print(variable_1_data)
+                print(variable_2_data)
+                print(n_student_PCC)
+                print(str_PCC)
+                print("\n\n")
 
-                    # Printing the findings
-                    n_student_PCC = "N=" + str(len(variable_2_data))
-                    str_PCC = r_text + get_2_decimal(pcc) + ", p=" + get_2_decimal(pcc_p_value)
-
-                    if pcc_p_value > 0.0001:
-                        cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
-                                  + get_2_decimal(pcc) + " , " + get_2_decimal(pcc_p_value) + "\n"
-                    else:
-                        cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
-                                  + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
-
-                    corr_coef_writer.write(cc_data)
-
-                    print(title)
-                    print(variable_1_data)
-                    print(variable_2_data)
-                    print(n_student_PCC)
-                    print(str_PCC)
-                    print("\n\n")
-
-                    # plt.show()
+                # plt.show()
 
 
+# Getting the data by which we will categorize. e.g. Years of experience
 def get_categories_data():
 
     categories_data = []
@@ -200,7 +178,8 @@ def analyze_data():
 
     categories_data = get_categories_data()
 
-    options = {2: g_methods.age_categories}
+    options = {10: g_methods.lives_with_family_categorization}
+    # 2: g_methods.age_categories
     # 3: g_methods.vehicle_categorization,
     # 4: g_methods.experience_categorization
     # 5: g_methods.driving_hour_categorization,
@@ -208,22 +187,24 @@ def analyze_data():
     # 7: g_methods.duty_hours_categorization,
     # 8: g_methods.rest_hours_categorization,
     # 9: g_methods.marital_status_categorization,
-    # 10: g_methods.lives_with_family_categorization,
+    # ,
     # 11: g_methods.no_of_housemates_categorization,
     # 12: g_methods.education_level_categorization}
 
-    # for function_index in range(2, 3):
-    #     grouping_methods = options.get(function_index)
-    #     category = categories_data[function_index - 1]
-    #     group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
-    #
-    #     print(len(group_1_data_indices))
-    #     print(len(group_2_data_indices))
+    data_retrieve_index = 0
+    Group_1 = False
 
-    data_retrieve_index = 1119
+    if data_retrieve_index == 0:
+        for function_index in range(10, 11):
+            grouping_methods = options.get(function_index)
+            category = categories_data[function_index - 1] # By which we are categorizing. e.g. Years of Experience
+            print(grouping_methods)
+            print(category)
+            # Getting the indices of the people whose data we need. e.g. People having experince <= 10 Years
+            group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
 
     # Finding who is young and have education level at least SSC
-    if data_retrieve_index == 111:  # 1 means age, 11 means education
+    elif data_retrieve_index == 111:  # 1 means age, 11 means education
         category_temp = categories_data[1]
         # Finding who is young
         group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = \
@@ -234,13 +215,13 @@ def analyze_data():
             g_methods.compound_education_categorize(group_1_data_indices_temp, working_category)
 
     # Finding who is young and have education level at least SSC and lives with family
-    if data_retrieve_index == 1119:  # 1 means age, 11 means education, 9 means family
+    elif data_retrieve_index == 1119:  # 1 means age, 11 means education, 9 means family
         category_temp = categories_data[1]
         group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
             g_methods.age_categories(category_temp[1:])
-        temp_category = categories_data[11]
-        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
-            g_methods.compound_education_categorize(group_1_data_indices_temp, temp_category)
+        # temp_category = categories_data[11]
+        # group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
+        #     g_methods.compound_education_categorize(group_1_data_indices_temp, temp_category)
 
         working_category = categories_data[9]
         group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
@@ -248,8 +229,11 @@ def analyze_data():
 
     group_1_data_indices.append(0)
     group_2_data_indices.append(0)
-    print(group_2_data_indices)
-    print(len(group_2_data_indices))
+    print("Indices", group_2_data_indices)
+    category = np.array(category) # This is just for printing values of the corresponding index. Can be removed
+    print(category)
+    print(category[group_1_data_indices])
+    print(category[group_2_data_indices])
 
     with open(root_data_path, encoding="utf8") as opened_file:
         print(os.path.basename(root_data_path))
@@ -260,8 +244,15 @@ def analyze_data():
         for line in data:
             line = line.split(',')
             line = np.array(line)
-            print(line[group_2_data_indices])
-            data_set.append(line[group_2_data_indices])
+
+            if Group_1:
+                data_set.append(line[group_1_data_indices])
+                print(line[0])
+                print(line[group_1_data_indices])
+            else:
+                data_set.append(line[group_2_data_indices])
+                print(line[0])
+                print(line[group_2_data_indices])
 
         # Find the correlation one by one
         for per_data_in_dataset in data_set:

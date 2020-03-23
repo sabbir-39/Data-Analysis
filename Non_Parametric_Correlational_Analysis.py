@@ -15,6 +15,7 @@ y_axis_label = "Y Axis"
 data_set = []
 already_calculated = []
 
+
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
 # The reason is, after data analysis, I have found IQR works better than Z score
 # Parameter "sorted_data" must have to be sorted since IQR method needs to find median
@@ -53,11 +54,7 @@ def detect_outlier_iqr(sorted_data):
 
 
 def get_2_decimal(value):
-    return str(float("{0:.3f}".format(value)))
-
-
-def get_2_decimal_to_float(value):
-    return float("{0:.2f}".format(value))
+    return str(float("{0:.4f}".format(value)))
 
 
 def not_calculated_correlation(var1_name, var2_name):
@@ -70,7 +67,7 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result_total.txt", "a")
 
     variable_1_name = variable_1_data[0]
     variable_1_data = variable_1_data[1:]

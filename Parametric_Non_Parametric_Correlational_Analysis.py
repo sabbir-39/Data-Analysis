@@ -52,11 +52,7 @@ def detect_outlier_iqr(sorted_data):
 
 
 def get_2_decimal(value):
-    return str(float("{0:.3f}".format(value)))
-
-
-def get_2_decimal_to_float(value):
-    return float("{0:.2f}".format(value))
+    return str(float("{0:.4f}".format(value)))
 
 
 def not_calculated_correlation(var1_name, var2_name):
@@ -69,7 +65,7 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result.txt", "a")
+    # corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result.txt", "a")
 
     variable_1_name = variable_1_data[0]
     variable_1_data = variable_1_data[1:]
@@ -161,7 +157,7 @@ def find_the_correlation(variable_1_data):
                         cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
                                   + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
 
-                    corr_coef_writer.write(cc_data)
+                    ## corr_coef_writer.write(cc_data)
 
                     print(title)
                     print(variable_1_data)

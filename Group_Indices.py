@@ -47,8 +47,8 @@ def vehicle_categorization(vehicle_data):
 def experience_categorization(experience_data):
 
     # 3 "N/A" values were represented by the value "9999999999999"
-
     # Index should start from 1 as first value is data name (e.g. Personality), string
+    # Checked
 
     index = 1
     group_1 = []
@@ -62,14 +62,14 @@ def experience_categorization(experience_data):
             group_1.append(index)
         elif experience == 11:  # Experience is more than 10 years
             group_2.append(index)
-
         index += 1
-    return "Experience < 5 and 6-10 years", "Experience is more than 10 years", group_1, group_2
+
+    return "Experience <= 10 years", "Experience > 10 years", group_1, group_2
 
 
 def driving_hour_categorization(hours_data):
 
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
@@ -84,7 +84,7 @@ def driving_hour_categorization(hours_data):
 
 def rest_interval_categorization(interval_hours_data):  # Interval of rest
 
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
@@ -103,7 +103,7 @@ def duty_hours_categorization(duty_hours):
     # Several samples reported "No Limit" as their duty hours, they were coded as the value 24 hours
     # However, "No Limit" may not mean that they have worked extremely
     # Rather, it may mean there is no lower or upper bound.
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
@@ -118,7 +118,7 @@ def rest_hours_categorization(rest_hours):
     # Several samples reported "No Limit" as their rest hours, they were coded as the value 24
     # However, "No Limit" may not mean that they took rest extremely
     # Rather, it may mean there is no lower or upper bound.
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
@@ -129,8 +129,8 @@ def rest_hours_categorization(rest_hours):
 
 def marital_status_categorization(marital_data):
 
-    # 3 samples data are un-available (Mentioned as N/A)
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # 4 samples data are un-available (Mentioned as N/A)
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
@@ -145,25 +145,31 @@ def marital_status_categorization(marital_data):
 
 def lives_with_family_categorization(live_with_family_data):
 
-    # 3 samples data are un-available (Mentioned as N/A)
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
-
+    # 4 samples data are un-available (Mentioned as N/A)
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
     # Index should start from 1 as first value is data name (e.g. Personality), string
+    # Checked data
+
+    index = 1
+    group1_indices = []
+    group2_indices = []
 
     for data in live_with_family_data:
         data = data.upper()
 
         if data == "Y":  # Lives with family
-            print("Do something")
+            group1_indices.append(index)
         elif data == "N":  # Does not live with family
-            print("Do something")
+            group2_indices.append(index)
+        index += 1
+    return "Lives With Family", "Does Not Live with Family", group1_indices, group2_indices
 
 
 def no_of_housemates_categorization(housemates_data):
 
     # One data was 10+ which was encoded as 11 another one was 2-3 which was encoded as 2
-    # 3 samples data are un-available (Mentioned as N/A)
-    # "N/A" values (for 3 samples) were represented by the value "9999999999999"
+    # 4 samples data are un-available (Mentioned as N/A)
+    # "N/A" values (for 4 samples) were represented by the value "9999999999999"
 
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
