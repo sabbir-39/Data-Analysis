@@ -9,6 +9,8 @@ import Group_Indices as g_methods
 
 root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Data_Total.csv'
 root_path_categories = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Coded_Demographic_For_Aanlysis.csv'
+corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results"
+                        "\\cc_below_SSC.txt", "a")
 
 DEGREE = 1  # Fit a polynomial
 
@@ -16,6 +18,7 @@ x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
 data_set = []
 already_calculated = []
+group_1_data_indices = []
 
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
@@ -69,8 +72,6 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results"
-                            "\\cc_do_not_live_with_family.txt", "a")
 
     variable_1_name = variable_1_data[len(variable_1_data)-1]
     print("Name", variable_1_name)
@@ -178,7 +179,7 @@ def analyze_data():
 
     categories_data = get_categories_data()
 
-    options = {10: g_methods.lives_with_family_categorization}
+    options = {12: g_methods.education_level_categorization}
     # 2: g_methods.age_categories
     # 3: g_methods.vehicle_categorization,
     # 4: g_methods.experience_categorization
@@ -187,53 +188,89 @@ def analyze_data():
     # 7: g_methods.duty_hours_categorization,
     # 8: g_methods.rest_hours_categorization,
     # 9: g_methods.marital_status_categorization,
-    # ,
+    # 10: g_methods.lives_with_family_categorization,
     # 11: g_methods.no_of_housemates_categorization,
-    # 12: g_methods.education_level_categorization}
+    # }
 
     data_retrieve_index = 0
-    Group_1 = False
+    Group_1 = True
 
     if data_retrieve_index == 0:
-        for function_index in range(10, 11):
+        group_1_name_temp = ""  # As we do not have these data in this case
+        group_2_name_temp = ""  # As we do not have these data in this case
+        for function_index in range(12, 13):
             grouping_methods = options.get(function_index)
-            category = categories_data[function_index - 1] # By which we are categorizing. e.g. Years of Experience
-            print(grouping_methods)
-            print(category)
+            # By which we are categorizing. e.g. Years of Experience
+            working_category = categories_data[function_index - 1]
             # Getting the indices of the people whose data we need. e.g. People having experince <= 10 Years
-            group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(category[1:])
+            group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = grouping_methods(working_category[1:])
 
     # Finding who is young and have education level at least SSC
-    elif data_retrieve_index == 111:  # 1 means age, 11 means education
+    elif data_retrieve_index == 11110:  # 1 means age, 11 means education, 10 means SSC
         category_temp = categories_data[1]
         # Finding who is young
         group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = \
             g_methods.age_categories(category_temp[1:])
+        print("Age ", group_2_data_indices_temp)
         working_category = categories_data[11]
         # Finding who has at least SSC
-        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
-            g_methods.compound_education_categorize(group_1_data_indices_temp, working_category)
+        if Group_1: # Finding young and at least SSC
+            group_1_name, group_1_data_indices = \
+            g_methods.compound_education_categorize_atlesat_ssc(group_1_data_indices_temp, working_category)
+            group_2_data_indices = []  # For generalisation, otherwise problem will occur in appending 0 index
+        else: # Finding older and at least SSC
+            group_2_name, group_2_data_indices = \
+                g_methods.compound_education_categorize_atlesat_ssc(group_2_data_indices_temp, working_category)
+            group_1_data_indices = [] # For generalisation
+            print("index", group_2_data_indices)
+
+    # Finding who is young and have education level below SSC
+    elif data_retrieve_index == 1118:  # 1 means age, 11 means education, 8 means below SSC
+        category_temp = categories_data[1]
+        # Finding who are young
+        group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp = \
+            g_methods.age_categories(category_temp[1:])
+        working_category = categories_data[11]
+        # Finding who has below SSC education
+        if Group_1:  # Finding young and below SSC
+            group_1_name, group_1_data_indices = \
+                g_methods.compound_education_categorize_below_ssc(group_1_data_indices_temp, working_category)
+            group_2_data_indices = []  # For generalisation, otherwise problem will occur in appending 0 index
+        else:  # Finding older and below SSC
+            group_2_name, group_2_data_indices = \
+                g_methods.compound_education_categorize_below_ssc(group_2_data_indices_temp, working_category)
+            group_1_data_indices = []  # For generalisation
 
     # Finding who is young and have education level at least SSC and lives with family
     elif data_retrieve_index == 1119:  # 1 means age, 11 means education, 9 means family
         category_temp = categories_data[1]
+
+        ########### Need to Checcccccck ####
+
         group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
             g_methods.age_categories(category_temp[1:])
         # temp_category = categories_data[11]
         # group_1_name_temp, group_2_name_temp, group_1_data_indices_temp, group_2_data_indices_temp =\
         #     g_methods.compound_education_categorize(group_1_data_indices_temp, temp_category)
 
-        working_category = categories_data[9]
-        group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
-            g_methods.compound_family_categorization(group_1_data_indices_temp, working_category)
+        # working_category = categories_data[9]
+        # group_1_name, group_2_name, group_1_data_indices, group_2_data_indices = \
+        #     g_methods.compound_family_categorization(group_1_data_indices_temp, working_category)
 
     group_1_data_indices.append(0)
     group_2_data_indices.append(0)
-    print("Indices", group_2_data_indices)
-    category = np.array(category) # This is just for printing values of the corresponding index. Can be removed
-    print(category)
-    print(category[group_1_data_indices])
-    print(category[group_2_data_indices])
+
+    if Group_1:
+        str_write = group_1_name_temp + "," + group_1_name + "\n"
+        print("Indices", group_1_data_indices)
+        working_category = np.array(working_category)
+        print(working_category[group_1_data_indices])
+    else:
+        str_write = group_2_name_temp + "," + group_2_name + "\n"
+        print("Indices", group_2_data_indices)
+        working_category = np.array(working_category)
+        print(working_category[group_2_data_indices])
+    corr_coef_writer.write(str_write)
 
     with open(root_data_path, encoding="utf8") as opened_file:
         print(os.path.basename(root_data_path))
@@ -247,12 +284,12 @@ def analyze_data():
 
             if Group_1:
                 data_set.append(line[group_1_data_indices])
-                print(line[0])
-                print(line[group_1_data_indices])
+                print(str_write," ", line[0])
+                print(str_write, line[group_1_data_indices])
             else:
                 data_set.append(line[group_2_data_indices])
-                print(line[0])
-                print(line[group_2_data_indices])
+                print(str_write, line[0])
+                print(str_write, line[group_2_data_indices])
 
         # Find the correlation one by one
         for per_data_in_dataset in data_set:

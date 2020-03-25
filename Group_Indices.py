@@ -33,7 +33,7 @@ def vehicle_categorization(vehicle_data):
     group2_indices = []
 
     for vehicle in vehicle_data:
-        vehicle = vehicle.upper()
+        vehicle = vehicle.strip().upper()
 
         if vehicle == "P":  # Private Car
             group1_indices.append(index)
@@ -135,7 +135,7 @@ def marital_status_categorization(marital_data):
     # Index should start from 1 as first value is data name (e.g. Personality), string
 
     for marital in marital_data:
-        marital = marital.upper()
+        marital = marital.strip().upper()
 
         if marital == "M":  # Married
             print("Married")
@@ -155,7 +155,7 @@ def lives_with_family_categorization(live_with_family_data):
     group2_indices = []
 
     for data in live_with_family_data:
-        data = data.upper()
+        data = data.strip().upper()
 
         if data == "Y":  # Lives with family
             group1_indices.append(index)
@@ -185,22 +185,24 @@ def education_level_categorization(education_data):
     group2_indices = []
 
     for data in education_data:
-        data = float(data)
+        data = float(data.strip())
 
         if data == 8:  # Below SSC
-            print("Do something")
+            group1_indices.append(index)
         elif data == 10:  # SSC
-            print("Do something")
+            group2_indices.append(index)
         elif data == 16:  # Bachelor
-            print("Do something")
+            group2_indices.append(index)
         elif data == 18:  # Masters
-            print("Do something")
+            group2_indices.append(index)
+        index += 1
+    return "Below SSC", "At Least SSC", group1_indices, group2_indices
 
 
 # The following method will be used to find out education level of a specific number of people
 # e.g. You may use this method to find out the people whose age is 18 to 30 years (have to pass indices
 # through "indices" argument) and education level is at least SSC.
-def compound_education_categorize(indices, education_data):
+def compound_education_categorize_atlesat_ssc(indices, education_data):
     # Index should start from 1 as first value (Index 0) is data name (e.g. Personality), string
     # Indices mean the indices of the samples data for which we need to check education level
 
@@ -209,16 +211,38 @@ def compound_education_categorize(indices, education_data):
 
     for index in indices:
         education = int(education_data[index])
-        if education == 10:
+        if education == 10:  # SSC
             group_1_indices.append(index)
-        elif education == 16:
+        elif education == 16:  # Bachelor
             group_1_indices.append(index)
-        elif education == 18:
+        elif education == 18:  # Masters
             group_1_indices.append(index)
-        elif education == 8:
+        elif education == 8:  # Below SSC
             group_2_indices.append(index)
 
-    return "Education >= SSC", "Education < SSC", group_1_indices, group_2_indices
+    return "Education >= SSC", group_1_indices
+
+
+def compound_education_categorize_below_ssc(indices, education_data):
+    # Index should start from 1 as first value (Index 0) is data name (e.g. Personality), string
+    # Indices mean the indices of the samples data for which we need to check education level
+
+    group_1_indices = []
+    group_2_indices = []
+
+    for index in indices:
+        education = int(education_data[index])
+        if education == 10:  # SSC
+            group_1_indices.append(index)
+        elif education == 16:  # Bachelor
+            group_1_indices.append(index)
+        elif education == 18:  # Masters
+            group_1_indices.append(index)
+        elif education == 8:  # Below SSC
+            group_2_indices.append(index)
+
+    return "Education < SSC", group_2_indices
+
 
 
 # This method will be used to find
@@ -231,7 +255,7 @@ def compound_family_categorization(indices, family_data):
     group_2_indices = []
 
     for index in indices:
-        stays_with_f = family_data[index].upper()
+        stays_with_f = family_data[index].strip().upper()
         if stays_with_f == "Y":
             group_1_indices.append(index)
         elif stays_with_f == "N":

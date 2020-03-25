@@ -1,17 +1,11 @@
-already_calculated = ["ABC", "DEF", "GHI", "JKL"]
+def check():
+    group_1_indices_check = [1, 2, 3]
+    group_2_indices_check = [4, 5, 6]
 
-print(already_calculated[len(already_calculated)-1])
-print(already_calculated[:len(already_calculated)-1])
-
-
-def not_calculated_correlation(var1_name, var2_name):
-    for name in already_calculated:
-        if var1_name in name and var2_name in name:
-            return False
-    return True
+    return "data1", "data2", group_1_indices_check, group_2_indices_check
 
 
-if not_calculated_correlation("I", "K"):
-    print("Not Calculated")
-else:
-    print("Calculated")
+group_1_indices, group_2_indices = check()
+
+print(group_1_indices)
+print(group_2_indices)
