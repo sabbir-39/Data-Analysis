@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
 
-root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\Journey Session 2.csv'
+root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\Journey Session 1.csv'
 DEGREE = 1  # Fit a polynomial
 
 x_axis_label = "X Axis"
@@ -67,7 +67,7 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_heart_Driving_Session___1.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_TESSTTTTTT.txt", "a")
 
     variable_1_name = variable_1_data[0].replace("\n","")
     variable_1_data = variable_1_data[1:]
@@ -81,6 +81,9 @@ def find_the_correlation(variable_1_data):
         variable_2_name = variable_2_data[0].replace("\n","")
         variable_2_data = variable_2_data[1:]
         variable_2_data = np.array(variable_2_data, dtype=np.float32)
+
+        x_axis_label = variable_1_name
+        y_axis_label = variable_2_name
 
         if not_calculated_correlation(variable_1_name, variable_2_name):
             variable_1_data, variable_2_data = zip(*sorted(zip(variable_1_data, variable_2_data)))
@@ -203,9 +206,9 @@ def analyze_data():
                 acceleration_z.append(float(line[2]))
                 heart_rate.append(float(line[3]))
             else:
-                excluded_values.append(index)
+                excluded_values.append(float(line[3]))
                 print(index, line)
-
+            # print(index, line)
             index += 1
 
         data_set.append(acceleration_x)
@@ -213,7 +216,9 @@ def analyze_data():
         data_set.append(acceleration_z)
         data_set.append(heart_rate)
 
-        print(set(excluded_values))
+        print(excluded_values)
+        print(len(data))
+        print(len(excluded_values))
         print(acceleration_x)
         print(acceleration_y)
         print(acceleration_z)
