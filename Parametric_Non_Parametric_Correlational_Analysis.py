@@ -1,18 +1,20 @@
-# This will be used to find correlation between two variables
-# Data should be interval or ratio scale
+# This can be used to correlate two variables
+# Data should be ordinal type
+# As our data is likert scale (ordinal), we are using non-parametric test; Spearman Rank Correlation
 
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
 
-root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Data_Total.csv'
+root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\Journey Session 2.csv'
 DEGREE = 1  # Fit a polynomial
 
 x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
 data_set = []
 already_calculated = []
+
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
 # The reason is, after data analysis, I have found IQR works better than Z score
@@ -65,11 +67,10 @@ def not_calculated_correlation(var1_name, var2_name):
 
 
 def find_the_correlation(variable_1_data):
-    # corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_result.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_heart_Driving_Session___1.txt", "a")
 
-    variable_1_name = variable_1_data[0]
+    variable_1_name = variable_1_data[0].replace("\n","")
     variable_1_data = variable_1_data[1:]
-
     variable_1_data = np.array(variable_1_data, dtype=np.float32)
     variable_1_data_not_sorted = variable_1_data
 
@@ -77,7 +78,7 @@ def find_the_correlation(variable_1_data):
 
         variable_1_data = variable_1_data_not_sorted
 
-        variable_2_name = variable_2_data[0]
+        variable_2_name = variable_2_data[0].replace("\n","")
         variable_2_data = variable_2_data[1:]
         variable_2_data = np.array(variable_2_data, dtype=np.float32)
 
@@ -108,7 +109,7 @@ def find_the_correlation(variable_1_data):
                     # del variable_2_data[index]
                     n_outlier += 1
 
-                if len(variable_1_data) >= 8 and len(variable_2_data) >= 8:
+                if (len(variable_1_data) >= 8 and len(variable_2_data) >= 8) and (len(variable_2_data) == len(variable_1_data)):
 
                     # Doing Normality Test
                     normality_stats_var1, p_value_norm_var1 = stats.normaltest(variable_1_data)
@@ -157,7 +158,7 @@ def find_the_correlation(variable_1_data):
                         cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
                                   + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
 
-                    ## corr_coef_writer.write(cc_data)
+                    # corr_coef_writer.write(cc_data)
 
                     print(title)
                     print(variable_1_data)
@@ -166,22 +167,57 @@ def find_the_correlation(variable_1_data):
                     print(str_PCC)
                     print("\n\n")
 
-                    # plt.show()
+                    plt.show()
 
 
 # To analyze the data
 # We have to send the data path where the files will contain data
 def analyze_data():
 
-    with open(root_data_path, encoding="utf8") as opened_file:
+    with open(root_data_path, encoding="utf-8") as opened_file:
         print(os.path.basename(root_data_path))
         data = opened_file.readlines()
 
+        x_y_z_pulse = data[0]
+
+        acceleration_x = []
+        acceleration_x.append(x_y_z_pulse.split(',')[0])
+        acceleration_y = []
+        acceleration_y.append(x_y_z_pulse.split(',')[1])
+        acceleration_z = []
+        acceleration_z.append(x_y_z_pulse.split(',')[2])
+        heart_rate = []
+        heart_rate.append(x_y_z_pulse.split(',')[3])
+
+        excluded_values = []
+        index = 2
+
         # Reading the data(line by line)
         # Each row should contain data of one type. e.g. All participants data of personality
-        for line in data:
+        for line in data[1:]:
             line = line.split(',')
-            data_set.append(line)
+
+            if 60 <= float(line[3]) <= 130:
+                acceleration_x.append(float(line[0]))
+                acceleration_y.append(float(line[1]))
+                acceleration_z.append(float(line[2]))
+                heart_rate.append(float(line[3]))
+            else:
+                excluded_values.append(index)
+                print(index, line)
+
+            index += 1
+
+        data_set.append(acceleration_x)
+        data_set.append(acceleration_y)
+        data_set.append(acceleration_z)
+        data_set.append(heart_rate)
+
+        print(set(excluded_values))
+        print(acceleration_x)
+        print(acceleration_y)
+        print(acceleration_z)
+        print(heart_rate)
 
         # Find the correlation one by one
         for per_data_in_dataset in data_set:
