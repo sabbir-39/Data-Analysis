@@ -1,11 +1,11 @@
 # This can be used to correlate two variables
 # Data should be ordinal type
 # As our data is likert scale (ordinal), we are using non-parametric test; Spearman Rank Correlation
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import Common_Methods as c_methods
 
 root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\CSV'
 DEGREE = 1  # Fit a polynomial
@@ -13,11 +13,14 @@ DEGREE = 1  # Fit a polynomial
 x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
 
-# Journey Session 1 works fine in 3026 also
-
 file_names_list = ["Azmeen Sir.csv", "Driving Session 1.csv", "Driving Session 2.csv", "Driving Session 3.csv", "Driving Session 4.csv", "Istiaque Sir 1.csv", "Istiaque Sir 2.csv", "Journey Session 1.csv", "Journey Session 2.csv"]
-lower_limit_list = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-upper_limit_list = [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+
+# Final version start
+
+lower_limit_list = [2456, -1, 1200, 1005, 2000, 1040, -1, 1013, 811]
+upper_limit_list = [2601, 10000, 4035, 3626, 3611, 1783, 10000, 3008, 1792]
+
+# Final version end
 
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
@@ -71,7 +74,7 @@ def not_calculated_correlation(var1_name, var2_name, already_calculated):
 
 
 def find_the_correlation(variable_1_data, data_set, already_calculated, file_name):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_TESSTTTTTT.txt", "a")
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\Abrupt HR\\"+"CC_Abrupt_HR_"+"TESTTTTT"+".txt", "a")
 
     variable_1_name = variable_1_data[0].replace("\n","")
     variable_1_data = variable_1_data[1:]
@@ -90,11 +93,13 @@ def find_the_correlation(variable_1_data, data_set, already_calculated, file_nam
         y_axis_label = variable_2_name
 
         if not_calculated_correlation(variable_1_name, variable_2_name, already_calculated):
+
             variable_1_data, variable_2_data = zip(*sorted(zip(variable_1_data, variable_2_data)))
             n_outlier = 0
             title = "Correlation between " + variable_1_name + " and " + variable_2_name
 
             if len(variable_1_data) > 0 and len(variable_2_data) > 0:
+
                 #  Outlier detection for variable_1_data
                 print("Prior to removing outliers, var 1 :N = ", len(variable_1_data))
                 outliers_indices = detect_outlier_z_score(variable_1_data)
@@ -173,8 +178,7 @@ def find_the_correlation(variable_1_data, data_set, already_calculated, file_nam
                     print(n_student_PCC)
                     print(str_PCC)
                     print("\n\n")
-
-                    # plt.show()
+                    plt.show()
 
 
 # To analyze the data
@@ -210,7 +214,6 @@ def analyze_data():
 
                 excluded_values = []
                 id_list = []
-                id_list.append(0)
                 index = 2
 
                 # Reading the data(line by line)
@@ -223,16 +226,17 @@ def analyze_data():
 
                     if lower_limit_list[index_lu] <= data_id <= upper_limit_list[index_lu]:
 
-                        if 0 <= float(line[3]) <= 1000:
+                        if 60 <= float(line[3]) <= 130:
                             acceleration_x.append(float(line[0]))
                             acceleration_y.append(float(line[1]))
                             acceleration_z.append(float(line[2]))
                             heart_rate.append(float(line[3]))
                         else:
-                            excluded_values.append(float(line[3]))
+                            # excluded_values.append(float(line[3]))
+                            excluded_values.append(index)
                             print(index, line)
                         # print(index, line)
-                        index += 1
+                    index += 1
 
                 data_set.append(acceleration_x)
                 data_set.append(acceleration_y)
@@ -246,13 +250,25 @@ def analyze_data():
                 print(acceleration_y)
                 print(acceleration_z)
                 print(heart_rate)
-                print(id_list)
 
-                c_methods.visualize_the_data(id_list, heart_rate, "Serial No. of Data", "Heart Rate", file_name)
+                # Can be removed, just checking
+                print("First Values: ",
+                      acceleration_x[1],
+                      acceleration_y[1],
+                      acceleration_z[1],
+                      heart_rate[1])
+                print(upper_limit_list[index_lu] - lower_limit_list[index_lu] - len(excluded_values) + 1)
+                print(len(acceleration_x))
+                print("Last Values: ",
+                      acceleration_x[len(acceleration_x) - 1],
+                      acceleration_y[len(acceleration_y) - 1],
+                      acceleration_z[len(acceleration_z) - 1],
+                      heart_rate[len(heart_rate) - 1])
+                # Cane be removed, just checking
 
                 # # Find the correlation one by one
-                # for per_data_in_dataset in data_set:
-                #     find_the_correlation(per_data_in_dataset, data_set, already_calculated, file_name)
+                for per_data_in_dataset in data_set:
+                    find_the_correlation(per_data_in_dataset, data_set, already_calculated, file_name)
 
         index_lu += 1
 

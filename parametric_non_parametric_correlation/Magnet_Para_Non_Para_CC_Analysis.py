@@ -1,23 +1,19 @@
 # This can be used to correlate two variables
 # Data should be ordinal type
 # As our data is likert scale (ordinal), we are using non-parametric test; Spearman Rank Correlation
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import Common_Methods as c_methods
 
-root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\CSV'
+root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Magnetic Field\Magnet - Journey Session 2.csv'
 DEGREE = 1  # Fit a polynomial
 
 x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
-
-# Journey Session 1 works fine in 3026 also
-
-file_names_list = ["Azmeen Sir.csv", "Driving Session 1.csv", "Driving Session 2.csv", "Driving Session 3.csv", "Driving Session 4.csv", "Istiaque Sir 1.csv", "Istiaque Sir 2.csv", "Journey Session 1.csv", "Journey Session 2.csv"]
-lower_limit_list = [0, 0, 0, 0, 0, 0, 0, 0, 0]
-upper_limit_list = [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+data_set = []
+already_calculated = []
 
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
@@ -61,7 +57,7 @@ def get_2_decimal(value):
     return str(float("{0:.4f}".format(value)))
 
 
-def not_calculated_correlation(var1_name, var2_name, already_calculated):
+def not_calculated_correlation(var1_name, var2_name):
     for name in already_calculated:
         if var1_name in name and var2_name in name:
             return False
@@ -70,8 +66,8 @@ def not_calculated_correlation(var1_name, var2_name, already_calculated):
     return True
 
 
-def find_the_correlation(variable_1_data, data_set, already_calculated, file_name):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_TESSTTTTTT.txt", "a")
+def find_the_correlation(variable_1_data):
+    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\Results - txt Files\\Magnetic Field\\Positive-Negative Values\\cc_pos_neg_"+os.path.basename(root_data_path)+"_pos_neg.txt", "a")
 
     variable_1_name = variable_1_data[0].replace("\n","")
     variable_1_data = variable_1_data[1:]
@@ -89,12 +85,13 @@ def find_the_correlation(variable_1_data, data_set, already_calculated, file_nam
         x_axis_label = variable_1_name
         y_axis_label = variable_2_name
 
-        if not_calculated_correlation(variable_1_name, variable_2_name, already_calculated):
+        if not_calculated_correlation(variable_1_name, variable_2_name):
             variable_1_data, variable_2_data = zip(*sorted(zip(variable_1_data, variable_2_data)))
             n_outlier = 0
             title = "Correlation between " + variable_1_name + " and " + variable_2_name
 
             if len(variable_1_data) > 0 and len(variable_2_data) > 0:
+
                 #  Outlier detection for variable_1_data
                 print("Prior to removing outliers, var 1 :N = ", len(variable_1_data))
                 outliers_indices = detect_outlier_z_score(variable_1_data)
@@ -164,97 +161,84 @@ def find_the_correlation(variable_1_data, data_set, already_calculated, file_nam
                         cc_data = variable_1_name + " , " + variable_2_name + " ," + str(len(variable_1_data)) + " , " + r_text\
                                   + get_2_decimal(pcc) + " , " + str(pcc_p_value) + "\n"
 
-                    # corr_coef_writer.write(cc_data)
+                    corr_coef_writer.write(cc_data)
 
                     print(title)
                     print(variable_1_data)
                     print(variable_2_data)
-                    print(file_name)
                     print(n_student_PCC)
                     print(str_PCC)
                     print("\n\n")
 
-                    # plt.show()
+                    plt.show()
 
 
 # To analyze the data
 # We have to send the data path where the files will contain data
 def analyze_data():
 
-    index_lu = 0
+    with open(root_data_path, encoding="utf-8") as opened_file:
+        print(os.path.basename(root_data_path))
+        data = opened_file.readlines()
 
-    global lower_limit_list
-    global upper_limit_list
+        x_y_z_pulse = data[0]
 
-    for file in sorted(os.listdir(root_data_path)):
-        file_name = os.path.basename(file)
-        if file.endswith(".csv") and (file_name == file_names_list[index_lu]):
+        magnet_field_x = []
+        magnet_field_x.append(x_y_z_pulse.split(',')[0])
+        magnet_field_y = []
+        magnet_field_y.append(x_y_z_pulse.split(',')[1])
+        magnet_field_z = []
+        magnet_field_z.append(x_y_z_pulse.split(',')[2])
+        heart_rate = []
+        heart_rate.append(x_y_z_pulse.split(',')[3])
 
-            with open(os.path.join(root_data_path, file), encoding="utf8") as opened_file:
-                print(os.path.basename(root_data_path))
-                data = opened_file.readlines()
+        excluded_values = []
+        index = 2
 
-                data_set = []
-                already_calculated = []
+        # Reading the data(line by line)
+        # Each row should contain data of one type. e.g. All participants data of personality
+        for line in data[1:]:
+            line = line.split(',')
 
-                x_y_z_pulse = data[0]
+            if 60 <= float(line[3]) <= 130:
+                magnet_field_x.append((float(line[0])))
+                magnet_field_y.append((float(line[1])))
+                magnet_field_z.append((float(line[2])))
+                heart_rate.append(float(line[3]))
+            else:
+                excluded_values.append(float(line[3]))
+                print(index, line)
+            # print(index, line)
+            index += 1
 
-                acceleration_x = []
-                acceleration_x.append(x_y_z_pulse.split(',')[0])
-                acceleration_y = []
-                acceleration_y.append(x_y_z_pulse.split(',')[1])
-                acceleration_z = []
-                acceleration_z.append(x_y_z_pulse.split(',')[2])
-                heart_rate = []
-                heart_rate.append(x_y_z_pulse.split(',')[3])
+        data_set.append(magnet_field_x)
+        data_set.append(magnet_field_y)
+        data_set.append(magnet_field_z)
+        data_set.append(heart_rate)
 
-                excluded_values = []
-                id_list = []
-                id_list.append(0)
-                index = 2
+        print(excluded_values)
+        print(len(data))
+        print(len(excluded_values))
+        print(magnet_field_x)
+        print(magnet_field_y)
+        print(magnet_field_z)
+        print(heart_rate)
 
-                # Reading the data(line by line)
-                # Each row should contain data of one type. e.g. All participants data of personality
-                for line in data[1:]:
-                    line = line.split(',')
+        # Testing.............................Checking.............................................................
+        # data_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\Ttts_" + os.path.basename(root_data_path) + ".txt","a")
+        #
+        # testing = 1
+        # for (x, y, z, pulse) in zip(magnet_field_x, magnet_field_y, magnet_field_z, heart_rate):
+        #     str_data_write = str(x) + "," + str(y) + "," + str(z) + "," + str(pulse)
+        #     data_writer.write(str_data_write+"\n")
+        #     testing += 1
+        # print(len(list(zip(magnet_field_x, magnet_field_y, magnet_field_z, heart_rate))))
+        # print(testing)
+        # Testing...............................Checking...........................................................
 
-                    data_id = float(line[4])
-                    id_list.append(data_id)
-
-                    if lower_limit_list[index_lu] <= data_id <= upper_limit_list[index_lu]:
-
-                        if 0 <= float(line[3]) <= 1000:
-                            acceleration_x.append(float(line[0]))
-                            acceleration_y.append(float(line[1]))
-                            acceleration_z.append(float(line[2]))
-                            heart_rate.append(float(line[3]))
-                        else:
-                            excluded_values.append(float(line[3]))
-                            print(index, line)
-                        # print(index, line)
-                        index += 1
-
-                data_set.append(acceleration_x)
-                data_set.append(acceleration_y)
-                data_set.append(acceleration_z)
-                data_set.append(heart_rate)
-
-                print(excluded_values)
-                print(len(data))
-                print(len(excluded_values))
-                print(acceleration_x)
-                print(acceleration_y)
-                print(acceleration_z)
-                print(heart_rate)
-                print(id_list)
-
-                c_methods.visualize_the_data(id_list, heart_rate, "Serial No. of Data", "Heart Rate", file_name)
-
-                # # Find the correlation one by one
-                # for per_data_in_dataset in data_set:
-                #     find_the_correlation(per_data_in_dataset, data_set, already_calculated, file_name)
-
-        index_lu += 1
+        # Find the correlation one by one
+        for per_data_in_dataset in data_set:
+            find_the_correlation(per_data_in_dataset)
 
 
 analyze_data()

@@ -244,7 +244,6 @@ def compound_education_categorize_below_ssc(indices, education_data):
     return "Education < SSC", group_2_indices
 
 
-
 # This method will be used to find
 def compound_family_categorization(indices, family_data):
     # Index should start from 1 as first value (Index 0) is data name (e.g. Personality), string

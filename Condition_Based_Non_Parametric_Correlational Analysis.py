@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
-import Group_Indices as g_methods
+import Categorization_Methods as g_methods
 
 root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Data_Total.csv'
 root_path_categories = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\CSV File\Coded_Demographic_For_Aanlysis.csv'

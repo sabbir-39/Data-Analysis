@@ -2,19 +2,33 @@
 # Data should be ordinal type
 # As our data is likert scale (ordinal), we are using non-parametric test; Spearman Rank Correlation
 
+# lower_limit_list = [2470, 3125, 1207, 1136, 2010, 1053, 155, 1014, 818]
+# upper_limit_list = [2644, 3506, 4071, 3705, 3902, 1780, 2728, 1667, 1824]
+
 import os
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats as stats
 
-root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\Journey Session 1.csv'
+root_data_path = r'C:\Users\HP\Desktop\5th & 6th Semester\Bap Re Bap\Heart Rate Data\CSV'
 DEGREE = 1  # Fit a polynomial
 
 x_axis_label = "X Axis"
 y_axis_label = "Y Axis"
-data_set = []
-already_calculated = []
 
+file_names_list = ["Azmeen Sir.csv", "Driving Session 1.csv", "Driving Session 2.csv", "Driving Session 3.csv", "Driving Session 4.csv", "Istiaque Sir 1.csv", "Istiaque Sir 2.csv", "Journey Session 1.csv", "Journey Session 2.csv"]
+
+# Final version start
+lower_limit_list = [2456, -1, 1200, 1005, 2000, 1040, -1, 1013, 811]
+upper_limit_list = [2601, 10000, 4035, 3626, 3611, 1783, 10000, 3008, 1792]
+# Final version end
+
+
+# lower_limit_list = [2456, 0, 1200, 1005, 2000, 1040, 0, 1013, 811] # 811 - 3015 gives positive
+# upper_limit_list = [2601, 10000, 4035, 3626, 3611, 1783, 10000, 3008, 3015]
+
+# lower_limit_list = [2456, 0, 1200, 1005, 2000, 1040, 0, 1013, 2784] # 2784 - 3919 gives more positive
+# upper_limit_list = [2601, 10000, 4035, 3626, 3611, 1783, 10000, 3008, 3919]
 
 # To detect outliers we are using IQR(Inter Quartile Range) method instead of using Z Score.
 # The reason is, after data analysis, I have found IQR works better than Z score
@@ -57,7 +71,7 @@ def get_2_decimal(value):
     return str(float("{0:.4f}".format(value)))
 
 
-def not_calculated_correlation(var1_name, var2_name):
+def not_calculated_correlation(var1_name, var2_name, already_calculated):
     for name in already_calculated:
         if var1_name in name and var2_name in name:
             return False
@@ -66,8 +80,8 @@ def not_calculated_correlation(var1_name, var2_name):
     return True
 
 
-def find_the_correlation(variable_1_data):
-    corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\cc_TESSTTTTTT.txt", "a")
+def find_the_correlation(variable_1_data, data_set, already_calculated, file_name):
+    # corr_coef_writer = open("C:\\Users\\HP\\Desktop\\5th & 6th Semester\\Bap Re Bap\\Results\\Abrupt HR\\"+"CC_Abrupt_HR_TESTTTTTT"+".txt", "a")
 
     variable_1_name = variable_1_data[0].replace("\n","")
     variable_1_data = variable_1_data[1:]
@@ -85,7 +99,8 @@ def find_the_correlation(variable_1_data):
         x_axis_label = variable_1_name
         y_axis_label = variable_2_name
 
-        if not_calculated_correlation(variable_1_name, variable_2_name):
+        if not_calculated_correlation(variable_1_name, variable_2_name, already_calculated):
+
             variable_1_data, variable_2_data = zip(*sorted(zip(variable_1_data, variable_2_data)))
             n_outlier = 0
             title = "Correlation between " + variable_1_name + " and " + variable_2_name
@@ -166,10 +181,10 @@ def find_the_correlation(variable_1_data):
                     print(title)
                     print(variable_1_data)
                     print(variable_2_data)
+                    print(file_name)
                     print(n_student_PCC)
                     print(str_PCC)
                     print("\n\n")
-
                     plt.show()
 
 
@@ -177,56 +192,104 @@ def find_the_correlation(variable_1_data):
 # We have to send the data path where the files will contain data
 def analyze_data():
 
-    with open(root_data_path, encoding="utf-8") as opened_file:
-        print(os.path.basename(root_data_path))
-        data = opened_file.readlines()
+    index_lu = 0
 
-        x_y_z_pulse = data[0]
+    global lower_limit_list
+    global upper_limit_list
 
-        acceleration_x = []
-        acceleration_x.append(x_y_z_pulse.split(',')[0])
-        acceleration_y = []
-        acceleration_y.append(x_y_z_pulse.split(',')[1])
-        acceleration_z = []
-        acceleration_z.append(x_y_z_pulse.split(',')[2])
-        heart_rate = []
-        heart_rate.append(x_y_z_pulse.split(',')[3])
+    for file in sorted(os.listdir(root_data_path)):
+        file_name = os.path.basename(file)
+        if file.endswith(".csv") and (file_name == file_names_list[index_lu]):
 
-        excluded_values = []
-        index = 2
+            with open(os.path.join(root_data_path, file), encoding="utf8") as opened_file:
+                print(os.path.basename(root_data_path))
+                data = opened_file.readlines()
 
-        # Reading the data(line by line)
-        # Each row should contain data of one type. e.g. All participants data of personality
-        for line in data[1:]:
-            line = line.split(',')
+                data_set = []
+                already_calculated = []
 
-            if 60 <= float(line[3]) <= 130:
-                acceleration_x.append(float(line[0]))
-                acceleration_y.append(float(line[1]))
-                acceleration_z.append(float(line[2]))
-                heart_rate.append(float(line[3]))
-            else:
-                excluded_values.append(float(line[3]))
-                print(index, line)
-            # print(index, line)
-            index += 1
+                x_y_z_pulse = data[0]
 
-        data_set.append(acceleration_x)
-        data_set.append(acceleration_y)
-        data_set.append(acceleration_z)
-        data_set.append(heart_rate)
+                acceleration_x = []
+                acceleration_x.append(x_y_z_pulse.split(',')[0])
+                acceleration_y = []
+                acceleration_y.append(x_y_z_pulse.split(',')[1])
+                acceleration_z = []
+                acceleration_z.append(x_y_z_pulse.split(',')[2])
+                heart_rate = []
+                heart_rate.append(x_y_z_pulse.split(',')[3])
 
-        print(excluded_values)
-        print(len(data))
-        print(len(excluded_values))
-        print(acceleration_x)
-        print(acceleration_y)
-        print(acceleration_z)
-        print(heart_rate)
+                excluded_values = []
+                id_list = []
+                index = 2
 
-        # Find the correlation one by one
-        for per_data_in_dataset in data_set:
-            find_the_correlation(per_data_in_dataset)
+                variable_1_data_list = []
+                variable_1_data_list.append("Magnetic Field")
+
+                # Reading the data(line by line)
+                # Each row should contain data of one type. e.g. All participants data of personality
+                for line in data[1:]:
+                    line = line.split(',')
+
+                    data_id = float(line[4])
+                    id_list.append(data_id)
+
+                    if lower_limit_list[index_lu] <= data_id <= upper_limit_list[index_lu]:
+
+                        if 60 <= float(line[3]) <= 130:
+                            x_value = float(line[0])
+                            y_value = float(line[1])
+                            z_value = float(line[2])
+
+                            sqrd_value = x_value * x_value + y_value * y_value + z_value * z_value
+                            total_value = np.sqrt(sqrd_value)
+                            variable_1_data_list.append(total_value)
+
+                            # acceleration_x.append(float(line[0]))
+                            # acceleration_y.append(float(line[1]))
+                            # acceleration_z.append(float(line[2]))
+                            heart_rate.append(float(line[3]))
+                        else:
+                            # excluded_values.append(float(line[3]))
+                            excluded_values.append(index)
+                            print(index, line)
+                        # print(index, line)
+                    index += 1
+
+                data_set.append(variable_1_data_list)
+                # data_set.append(acceleration_x)
+                # data_set.append(acceleration_y)
+                # data_set.append(acceleration_z)
+                data_set.append(heart_rate)
+
+                print(excluded_values)
+                print(len(data))
+                print(len(excluded_values))
+                print(acceleration_x)
+                print(acceleration_y)
+                print(acceleration_z)
+                print(heart_rate)
+
+                # Can be removed, just checking
+                # print("First Values: ",
+                #       acceleration_x[1],
+                #       acceleration_y[1],
+                #       acceleration_z[1],
+                #       heart_rate[1])
+                # print(upper_limit_list[index_lu] - lower_limit_list[index_lu] - len(excluded_values) + 1)
+                # print(len(acceleration_x))
+                # print("Last Values: ",
+                #       acceleration_x[len(acceleration_x) - 1],
+                #       acceleration_y[len(acceleration_y) - 1],
+                #       acceleration_z[len(acceleration_z) - 1],
+                #       heart_rate[len(heart_rate) - 1])
+                # Cane be removed, just checking
+
+                # # Find the correlation one by one
+                for per_data_in_dataset in data_set:
+                    find_the_correlation(per_data_in_dataset, data_set, already_calculated, file_name)
+
+        index_lu += 1
 
 
 analyze_data()
